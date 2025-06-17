@@ -15,7 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**") // aplica a todos os endpoints
-                        .allowedOrigins("*") // ou "http://localhost:3000" se quiser restringir
+                        .allowedOrigins("*") // ou "http://localhost:3000" para restringir
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
             }

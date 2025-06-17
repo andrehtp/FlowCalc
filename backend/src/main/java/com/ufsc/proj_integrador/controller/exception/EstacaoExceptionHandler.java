@@ -14,6 +14,6 @@ public class EstacaoExceptionHandler {
 
     @ExceptionHandler(NaoExistemDadosNoPeriodoException.class)
     public ResponseEntity<String> handleSemDados(NaoExistemDadosNoPeriodoException ex) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

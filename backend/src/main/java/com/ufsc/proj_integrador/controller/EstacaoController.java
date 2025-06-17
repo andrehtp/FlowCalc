@@ -3,6 +3,7 @@ package com.ufsc.proj_integrador.controller;
 import com.ufsc.proj_integrador.dto.DadosEstacaoDto;
 import com.ufsc.proj_integrador.dto.ResumoMensalDto;
 import com.ufsc.proj_integrador.dto.ResumoMensalResponseDto;
+import com.ufsc.proj_integrador.service.CaptchaService;
 import com.ufsc.proj_integrador.service.ResumoMensalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,35 +21,15 @@ import java.util.Map;
 public class EstacaoController {
 
     private final ResumoMensalService resumoMensalService;
-
-    @GetMapping("/{codigoEstacao}/resumos")
-    public ResponseEntity<?> getResumoMensalByEstacao(
-            @PathVariable Long codigoEstacao,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
-    ) {
-        List<DadosEstacaoDto> dados = resumoMensalService.getDadosEstacao(codigoEstacao, inicio, fim);
-
-        if (dados.isEmpty()) {
-            return ResponseEntity
-                    .status(404)
-                    .body("Não existem dados para a estação no período específicado.");
-        }
-
-        return ResponseEntity.ok(dados);
-    }
-
-    @GetMapping("/{codigoEstacao}/resumo")
-    public ResponseEntity<?> resumoMensalController(
-            @PathVariable Long codigoEstacao,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
-    ) {
-        return ResponseEntity.ok(resumoMensalService.buildResumoMensalResponseDto(codigoEstacao, inicio, fim));
-    }
+    private final CaptchaService captchaService;
 
     @PostMapping("/consulta-estacao")
     public ResponseEntity<?> resumoMensalController(@RequestBody Map<String, Object> body) {
+        String captchaToken = (String) body.get("captchaToken");
+        if (captchaToken == null || !captchaService.isCaptchaValid(captchaToken)) {
+            return ResponseEntity.status(403).body("Verificação de CAPTCHA falhou.");
+        }
+
         Long codEstacao = Long.valueOf(body.get("codEstacao").toString());
 
         String inicioStr = (String) body.get("dataInicio");

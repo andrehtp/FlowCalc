@@ -17,8 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class ResumoMensalQueryRepositoryImpl implements ResumoMensalQueryRepository {
-
-    private final EntityManager entityManager;
+    
     private final JPAQueryFactory queryFactory;
 
     public CabecalhoEstacaoDto getCabecalhoEstacaoByCodigoEstacao(Long codigoEstacao) {
