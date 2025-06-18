@@ -4,7 +4,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ufsc.proj_integrador.dto.VazaoDiariaDto;
 import com.ufsc.proj_integrador.model.QVazaoDiaria;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VazaoDiariaRepositoryImpl implements VazaoDiariaRepositoryCustom {
 
-    private final EntityManager entityManager;
+
     private final JPAQueryFactory queryFactory;
 
     @Override
