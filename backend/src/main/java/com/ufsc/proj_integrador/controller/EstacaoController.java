@@ -1,18 +1,13 @@
 package com.ufsc.proj_integrador.controller;
 
-import com.ufsc.proj_integrador.dto.DadosEstacaoDto;
-import com.ufsc.proj_integrador.dto.ResumoMensalDto;
-import com.ufsc.proj_integrador.dto.ResumoMensalResponseDto;
 import com.ufsc.proj_integrador.service.CaptchaService;
 import com.ufsc.proj_integrador.service.ResumoMensalService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @RestController

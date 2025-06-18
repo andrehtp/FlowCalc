@@ -7,7 +7,6 @@ import com.ufsc.proj_integrador.dto.CabecalhoEstacaoDto;
 import com.ufsc.proj_integrador.dto.DadosEstacaoDto;
 import com.ufsc.proj_integrador.dto.ResumoMensalDto;
 import com.ufsc.proj_integrador.model.*;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

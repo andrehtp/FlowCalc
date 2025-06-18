@@ -3,7 +3,7 @@ package com.ufsc.proj_integrador.service;
 import com.ufsc.proj_integrador.controller.exception.EstacaoNotFoundException;
 import com.ufsc.proj_integrador.controller.exception.NaoExistemDadosNoPeriodoException;
 import com.ufsc.proj_integrador.dto.*;
-import com.ufsc.proj_integrador.model.ResumoMensal;
+
 import com.ufsc.proj_integrador.repository.VazaoDiariaRepository;
 import com.ufsc.proj_integrador.repository.query.ResumoMensalQueryRepository;
 import lombok.RequiredArgsConstructor;
