@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ResumoHidrologico } from '../components/dados/ResumoHidrologico';
-import { CurvaPermanencia } from '../components/dados/curvaperm';
+import { CurvaPermanencia } from '../components/dados/CurvaPermanencia';
 import { Mapa } from '../components/dados/Mapa';
 
 export const DadosPage = () => {
