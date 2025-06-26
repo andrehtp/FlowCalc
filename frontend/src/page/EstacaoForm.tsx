@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { validateCodigo, validateData } from './Validation';
+import { validateCodigo, validateData } from '../components/Validation';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 

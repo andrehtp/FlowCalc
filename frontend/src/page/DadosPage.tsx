@@ -1,15 +1,15 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ResumoHidrologico } from './ResumoHidrologico';
-import { Calculos } from './Calculos';
-import { Mapa } from './Mapa';
+import { ResumoHidrologico } from '../components/dados/ResumoHidrologico';
+import { CurvaPermanencia } from '../components/dados/curvaperm';
+import { Mapa } from '../components/dados/Mapa';
 
-export const DadosEstacao = () => {
+export const DadosPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dados = location.state?.dados;
 
-  const [abaAtiva, setAbaAtiva] = useState<'resumo' | 'calculos'>('resumo');
+  const [abaAtiva, setAbaAtiva] = useState<'resumo' | 'curva'>('resumo');
   const [nivelConsistencia, setNivelConsistencia] = useState<string | null>(null);
 
   // Bloqueia acesso direto pela URL
@@ -82,22 +82,22 @@ export const DadosEstacao = () => {
                 ? 'border-b-2 border-blue-600 text-blue-600'
                 : 'text-gray-600'}`}
             >
-              Resumo Hidrológico
+              Dados
             </button>
 
             <button
-              onClick={() => setAbaAtiva('calculos')}
-              className={`text-lg font-semibold pb-2 ${abaAtiva === 'calculos'
+              onClick={() => setAbaAtiva('curva')}
+              className={`text-lg font-semibold pb-2 ${abaAtiva === 'curva'
                 ? 'border-b-2 border-blue-600 text-blue-600'
                 : 'text-gray-600'}`}
             >
-              Cálculos
+              Curva de Permanência
             </button>
           </div>
 
           {/* Conteúdo que muda conforme a aba ativa */}
           {abaAtiva === 'resumo' && <ResumoHidrologico dados={dadosFiltrados} />}
-          {abaAtiva === 'calculos' && <Calculos dados={dadosFiltrados} />}
+          {abaAtiva === 'curva' && <CurvaPermanencia dados={dadosFiltrados} />}
         </div>
       </div>
     </div>

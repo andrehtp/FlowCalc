@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
-import { EstacaoForm } from './components/EstacaoForm';
-import { DadosEstacao } from './components/DadosEstacao';
+import { EstacaoForm } from './page/EstacaoForm';
+import { DadosPage } from './page/DadosPage';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -41,7 +41,7 @@ export const App = () => {
           path="/dados-estacao"
           element={
             <Layout>
-              <DadosEstacao />
+              <DadosPage />
             </Layout>
           }
         />
