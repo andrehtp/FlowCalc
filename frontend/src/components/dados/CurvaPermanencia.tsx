@@ -9,15 +9,45 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
   const [tipoCurva, setTipoCurva] = useState<'empirica' | 'logaritmica'>('empirica');
   const [qPersonalizado, setQPersonalizado] = useState<string>(''); // agora como string
   const [vazaoPersonalizada, setVazaoPersonalizada] = useState<number | null>(null);
+  const [origemDados, setOrigemDados] = useState<'mensal' | 'diaria'>('mensal'); // select de origem
+  const [dadosVazao, setDadosVazao] = useState<any[]>(dados); // começa com os dados já carregados
+
+  // Atualizar dados somente quando o usuário pedir por vazão diária
+  useEffect(() => {
+    if (origemDados === 'diaria') {
+      const resumoMensalId = dados?.[0]?.resumoMensalId;
+      if (resumoMensalId) {
+        fetch('http://localhost:8080/api/vazoesDiarias', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ resumoMensalId }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setDadosVazao(data);
+          })
+          .catch((err) => {
+            console.error('Erro ao buscar vazões diárias:', err);
+            setDadosVazao([]); // Evita travar
+          });
+      }
+    } else {
+      setDadosVazao(dados); // volta para os dados mensais
+    }
+  }, [origemDados, dados]);
+
   // Ordenar e filtrar os dados de vazão média
-  const vazoes = dados
-    .map((d) => d.vazaoMedia)
+// Ordenar e filtrar os dados de vazão média ou diária
+  const vazoes = dadosVazao
+    .map((d) => d.vazaoMedia ?? d.vazao) // usa vazaoMedia ou, se não tiver, usa vazao
     .filter((v) => typeof v === 'number' && !isNaN(v))
     .sort((a, b) => b - a); // Ordenar do maior para o menor
 
@@ -38,14 +68,15 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
   };
 
   // Cálculo das vazões Q50, Q90, Q95 e Q98
-  const q50 = QDCalc(50);
-  const q90 = QDCalc(90);
-  const q95 = QDCalc(95);
-  const q98 = QDCalc(98);
-
+  const q50 = vazoes.length > 0 ? QDCalc(50) : 0;
+  const q90 = vazoes.length > 0 ? QDCalc(90) : 0;
+  const q95 = vazoes.length > 0 ? QDCalc(95) : 0;
+  const q98 = vazoes.length > 0 ? QDCalc(98) : 0;
 
   // Tabela de classes logarítmicas
   const classes = useMemo(() => {
+    if (vazoes.length === 0) return [];
+
     const K = 30;
     const Qmax = Math.max(...vazoes);
     const Qmin = Math.min(...vazoes);
@@ -99,48 +130,62 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
             Logarítmica
           </button>
         </div>
+
+        {/* Select de tipo de dado (mensal/diaria) */}
+        <div className="flex items-center gap-2">
+          <label htmlFor="origemDados" className="text-sm font-medium text-gray-700">Tipo de vazão:</label>
+          <select
+            id="origemDados"
+            value={origemDados}
+            onChange={(e) => setOrigemDados(e.target.value as 'mensal' | 'diaria')}
+            className="border border-gray-300 rounded px-2 py-1 text-sm"
+          >
+            <option value="mensal">Resumo Mensal</option>
+            <option value="diaria">Vazão Diária</option>
+          </select>
+        </div>
       </div>
 
       {/* Q-values ao lado */}
       <div className="mb-4 text-sm text-gray-700 flex flex-wrap items-center gap-4">
         {/*Q values fixos*/}
-          <div>  
-            <span className="mr-4"><strong>Q50</strong>: {q50.toFixed(2)} m³/s</span>
-            <span className="mr-4"><strong>Q90</strong>: {q90.toFixed(2)} m³/s</span>
-            <span className="mr-4"><strong>Q95</strong>: {q95.toFixed(2)} m³/s</span>
-            <span className="mr-4"><strong>Q98</strong>: {q98.toFixed(2)} m³/s</span>
-          </div>
-          {/* Q value personalizado */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="qPersonalizado" className="text-sm">QD:</label>
-            <input
-              id="qCustom"
-              type="number"
-              min={1}
-              max={99}
-              value={qPersonalizado}
-              onChange={(e) => {
-                const value = e.target.value;
-                setQPersonalizado(value);
-                const num = Number(value);
-                if (num >= 1 && num <= 99) {
-                  if (!isNaN(num)) {
-                    setVazaoPersonalizada(QDCalc(num));
-                  } else {
-                    setVazaoPersonalizada(null);
-                  }
+        <div>  
+          <span className="mr-4"><strong>Q50</strong>: {q50.toFixed(2)} m³/s</span>
+          <span className="mr-4"><strong>Q90</strong>: {q90.toFixed(2)} m³/s</span>
+          <span className="mr-4"><strong>Q95</strong>: {q95.toFixed(2)} m³/s</span>
+          <span className="mr-4"><strong>Q98</strong>: {q98.toFixed(2)} m³/s</span>
+        </div>
+        {/* Q value personalizado */}
+        <div className="flex items-center gap-2">
+          <label htmlFor="qPersonalizado" className="text-sm">QD:</label>
+          <input
+            id="qCustom"
+            type="number"
+            min={1}
+            max={99}
+            value={qPersonalizado}
+            onChange={(e) => {
+              const value = e.target.value;
+              setQPersonalizado(value);
+              const num = Number(value);
+              if (num >= 1 && num <= 99) {
+                if (!isNaN(num)) {
+                  setVazaoPersonalizada(QDCalc(num));
                 } else {
                   setVazaoPersonalizada(null);
                 }
-              }}
+              } else {
+                setVazaoPersonalizada(null);
+              }
+            }}
             className="border border-gray-300 rounded px-2 py-1 w-16 text-sm"
-            />
-            {vazaoPersonalizada !== null && (
-              <span className="text-sm text-blue-700 font-medium">
-                Q{qPersonalizado}: {vazaoPersonalizada.toFixed(2)} m³/s
-              </span>
-            )}   
-          </div>
+          />
+          {vazaoPersonalizada !== null && (
+            <span className="text-sm text-blue-700 font-medium">
+              Q{qPersonalizado}: {vazaoPersonalizada.toFixed(2)} m³/s
+            </span>
+          )}   
+        </div>
       </div>
 
       {/* Gráfico e tabela de classes */}
@@ -151,36 +196,36 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
-          dataKey="permanencia"
-          type="number"
-          tick={{ fontSize: 10 }}
-          domain={[0, 100]}
-          ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-          label={{
-            value: 'Probabilidade de Permanência (%)',
-            position: 'insideBottomRight',
-            offset: -5,
-          }}
+                dataKey="permanencia"
+                type="number"
+                tick={{ fontSize: 10 }}
+                domain={[0, 100]}
+                ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+                label={{
+                  value: 'Probabilidade de Permanência (%)',
+                  position: 'insideBottomRight',
+                  offset: -5,
+                }}
               />
               <YAxis
-          scale={tipoCurva === 'logaritmica' ? 'log' : 'linear'}
-          domain={['auto', 'auto']}
-          label={{
-            value: 'Vazão (m³/s)',
-            angle: -90,
-            position: 'insideLeft',
-          }}
+                scale={tipoCurva === 'logaritmica' ? 'log' : 'linear'}
+                domain={['auto', 'auto']}
+                label={{
+                  value: 'Vazão (m³/s)',
+                  angle: -90,
+                  position: 'insideLeft',
+                }}
               />
               <Tooltip
-          formatter={(value: any) => `${Number(value).toFixed(2)} m³/s`}
-          labelFormatter={(label: any) => `Permanência: ${label.toFixed(1)}%`}
+                formatter={(value: any) => `${Number(value).toFixed(2)} m³/s`}
+                labelFormatter={(label: any) => `Permanência: ${label.toFixed(1)}%`}
               />
               <Line
-          type="monotone"
-          dataKey="vazao"
-          stroke="#3182ce"
-          name="Vazão"
-          dot={false}
+                type="monotone"
+                dataKey="vazao"
+                stroke="#3182ce"
+                name="Vazão"
+                dot={false}
               />
               {/* Linhas de referência dos percentuais */}
               <ReferenceLine y={q50} label="Q50" stroke="#4299e1" strokeDasharray="3 3" />
