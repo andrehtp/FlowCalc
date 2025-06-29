@@ -121,74 +121,77 @@ export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim }: {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="flex-1">
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="permanencia"
-                type="number"
-                domain={[0, 100]}
-                label={{ value: 'Probabilidade de Permanência (%)', position: 'insideBottomRight', offset: -5 }}
-              />
-              <YAxis
-                scale={tipoCurva === 'logaritmica' ? 'log' : 'linear'}
-                domain={['auto', 'auto']}
-                label={{ value: 'Vazão (m³/s)', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip
-                formatter={(value: any) => `${Number(value).toFixed(2)} m³/s`}
-                labelFormatter={(label: any) => `Permanência: ${label.toFixed(1)}%`}
-              />
-              <Line
-                type="monotone"
-                dataKey="vazao"
-                stroke="#3182ce"
-                name="Vazão"
-                dot={false}
-              />
-              <ReferenceLine y={q50} label="Q50" stroke="#4299e1" strokeDasharray="3 3" />
-              <ReferenceLine y={q90} label="Q90" stroke="#4299e1" strokeDasharray="3 3" />
-              <ReferenceLine y={q95} label="Q95" stroke="#4299e1" strokeDasharray="3 3" />
-              <ReferenceLine y={q98} label="Q98" stroke="#4299e1" strokeDasharray="3 3" />
-              {vazaoPersonalizada !== null && (
-                <ReferenceLine
-                  y={vazaoPersonalizada}
-                  label={`Q${qPersonalizado}`}
-                  stroke="#e53e3e"
-                  strokeDasharray="4 2"
-                />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+<div className="flex gap-4">
+  {/* Gráfico com largura reduzida */}
+  <div className="w-3/5">
+    <ResponsiveContainer width="100%" height={400}>
+      <LineChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis
+          dataKey="permanencia"
+          type="number"
+          domain={[0, 100]}
+          label={{ value: 'Probabilidade de Permanência (%)', position: 'insideBottomRight', offset: -5 }}
+        />
+        <YAxis
+          scale={tipoCurva === 'logaritmica' ? 'log' : 'linear'}
+          domain={['auto', 'auto']}
+          label={{ value: 'Vazão (m³/s)', angle: -90, position: 'insideLeft' }}
+        />
+        <Tooltip
+          formatter={(value: any) => `${Number(value).toFixed(2)} m³/s`}
+          labelFormatter={(label: any) => `Permanência: ${label.toFixed(1)}%`}
+        />
+        <Line
+          type="monotone"
+          dataKey="vazao"
+          stroke="#3182ce"
+          name="Vazão"
+          dot={false}
+        />
+        <ReferenceLine y={q50} label="Q50" stroke="#4299e1" strokeDasharray="3 3" />
+        <ReferenceLine y={q90} label="Q90" stroke="#4299e1" strokeDasharray="3 3" />
+        <ReferenceLine y={q95} label="Q95" stroke="#4299e1" strokeDasharray="3 3" />
+        <ReferenceLine y={q98} label="Q98" stroke="#4299e1" strokeDasharray="3 3" />
+        {vazaoPersonalizada !== null && (
+          <ReferenceLine
+            y={vazaoPersonalizada}
+            label={`Q${qPersonalizado}`}
+            stroke="#e53e3e"
+            strokeDasharray="4 2"
+          />
+        )}
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
 
-        <div className="overflow-auto max-h-[400px] border rounded-md text-xs self-start">
-          <table className="min-w-max text-center">
-            <thead className="bg-gray-100 sticky top-0 z-10">
-              <tr>
-                <th className="px-2 py-1">Classe</th>
-                <th className="px-2 py-1">LI (m³/s)</th>
-                <th className="px-2 py-1">LS (m³/s)</th>
-                <th className="px-2 py-1">Fi</th>
-                <th className="px-2 py-1">Fac</th>
-              </tr>
-            </thead>
-            <tbody>
-              {classes.map((linha: any) => (
-                <tr key={linha.classe} className="border-t">
-                  <td className="px-2 py-1 font-medium">{linha.classe}</td>
-                  <td className="px-2 py-1">{linha.li.toFixed(2)}</td>
-                  <td className="px-2 py-1">{linha.ls.toFixed(2)}</td>
-                  <td className="px-2 py-1">{linha.fi}</td>
-                  <td className="px-2 py-1">{linha.fac}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+  {/* Tabela com largura maior e rolagem vertical */}
+  <div className="w-2/5 max-h-[400px] overflow-y-auto border rounded-md text-xs self-start">
+    <table className="min-w-full text-center">
+      <thead className="bg-gray-100 sticky top-0 z-10">
+        <tr>
+          <th className="px-2 py-1">Classe</th>
+          <th className="px-2 py-1">LI (m³/s)</th>
+          <th className="px-2 py-1">LS (m³/s)</th>
+          <th className="px-2 py-1">Fi</th>
+          <th className="px-2 py-1">Fac</th>
+        </tr>
+      </thead>
+      <tbody>
+        {classes.map((linha: any) => (
+          <tr key={linha.classe} className="border-t">
+            <td className="px-2 py-1 font-medium">{linha.classe}</td>
+            <td className="px-2 py-1">{linha.li.toFixed(2)}</td>
+            <td className="px-2 py-1">{linha.ls.toFixed(2)}</td>
+            <td className="px-2 py-1">{linha.fi}</td>
+            <td className="px-2 py-1">{linha.fac}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
     </div>
   );
 };
