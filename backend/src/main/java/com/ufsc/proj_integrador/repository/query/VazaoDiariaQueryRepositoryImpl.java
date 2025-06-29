@@ -44,7 +44,7 @@ public class VazaoDiariaQueryRepositoryImpl implements VazaoDiariaQueryRepositor
 		return query.fetch();
 	}
 
-	public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
+	public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim, Integer nivelConsistencia) {
 		QVazaoDiaria vd = QVazaoDiaria.vazaoDiaria;
 		QResumoMensal rm = QResumoMensal.resumoMensal;
 
@@ -59,6 +59,10 @@ public class VazaoDiariaQueryRepositoryImpl implements VazaoDiariaQueryRepositor
 		}
 		if (fim != null) {
 			query.where(rm.dataInicial.loe(fim));
+		}
+
+		if (nivelConsistencia != null) {
+			query.where(rm.nivelConsistencia.eq(nivelConsistencia));
 		}
 
 		return query.fetch();

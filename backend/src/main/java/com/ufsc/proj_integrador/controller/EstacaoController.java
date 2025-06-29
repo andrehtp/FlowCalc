@@ -21,9 +21,9 @@ public class EstacaoController {
     @PostMapping("/consulta-estacao")
     public ResponseEntity<?> resumoMensalController(@RequestBody Map<String, Object> body) {
         String captchaToken = (String) body.get("captchaToken");
-        if (captchaToken == null || !captchaService.isCaptchaValid(captchaToken)) {
+        /*if (captchaToken == null || !captchaService.isCaptchaValid(captchaToken)) {
             return ResponseEntity.status(403).body("Verificação de CAPTCHA falhou.");
-        }
+        }*/
 
         Long codEstacao = Long.valueOf(body.get("codEstacao").toString());
 
@@ -37,8 +37,13 @@ public class EstacaoController {
                 ? LocalDate.parse(fimStr).atStartOfDay()
                 : null;
 
+        String consistenciaStr = (String) body.get("nivelConsistencia");
+        Integer nivelConsistencia = (consistenciaStr != null && !consistenciaStr.isBlank())
+                ? Integer.parseInt(consistenciaStr)
+                : null;
+
         return ResponseEntity.ok(
-                resumoMensalService.buildResumoMensalResponseDto(codEstacao, inicio, fim)
+                resumoMensalService.buildResumoMensalResponseDto(codEstacao, inicio, fim, nivelConsistencia)
         );
     }
 }

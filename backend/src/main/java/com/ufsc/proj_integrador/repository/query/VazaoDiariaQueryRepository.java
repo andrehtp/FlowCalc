@@ -8,5 +8,5 @@ import com.ufsc.proj_integrador.dto.VazaoDiariaDto;
 public interface VazaoDiariaQueryRepository {
 	List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
 
-	List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
+	List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim, Integer nivelConsistencia);
 }

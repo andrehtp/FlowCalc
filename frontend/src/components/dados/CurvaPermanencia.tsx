@@ -11,10 +11,11 @@ import {
 
 import { useState, useEffect, useMemo } from 'react';
 
-export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim }: {
+export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim, nivelConsistencia }: {
   codigoEstacao: number,
   dataInicio: string,
-  dataFim: string
+  dataFim: string,
+  nivelConsistencia?: string | null
 }) => {
   const [tipoCurva, setTipoCurva] = useState<'empirica' | 'logaritmica'>('empirica');
   const [qPersonalizado, setQPersonalizado] = useState<string>('');
@@ -26,12 +27,17 @@ export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim }: {
     fetch('http://localhost:8080/api/curva-permanencia', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ codigoEstacao, dataInicio, dataFim })
+      body: JSON.stringify({
+        codigoEstacao,
+        dataInicio,
+        dataFim,
+        nivelConsistencia
+      })
     })
       .then(res => res.json())
       .then(setResultado)
       .catch(console.error);
-  }, [codigoEstacao, dataInicio, dataFim]);
+  }, [codigoEstacao, dataInicio, dataFim, nivelConsistencia]);
 
   const dados = origemDados === 'mensal' ? resultado?.resumoMensal : resultado?.vazaoDiaria;
   const chartData = dados?.curva ?? [];

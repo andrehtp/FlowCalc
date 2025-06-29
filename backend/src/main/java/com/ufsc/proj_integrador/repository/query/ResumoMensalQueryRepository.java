@@ -14,8 +14,9 @@ public interface ResumoMensalQueryRepository {
     List<ResumoMensalDto> getResumoMensalByCodigoEstacao(
             Long codigoEstacao,
             LocalDateTime inicio,
-            LocalDateTime fim
+            LocalDateTime fim,
+            Integer nivelConsistencia
     );
 
-    List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
+    List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim, Integer nivelConsistencia);
 }

@@ -20,8 +20,8 @@ public class VazaoDiariaService {
 		return vazaoDiariaRepository.getVazoesDiarias(codigoEstacao, inicio, fim);
 	}
 
-	public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
-		return vazaoDiariaRepository.getVazoesSomenteValores(codigoEstacao, inicio, fim);
+	public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim, Integer nivelConsistencia) {
+		return vazaoDiariaRepository.getVazoesSomenteValores(codigoEstacao, inicio, fim, nivelConsistencia);
 	}
 
 }

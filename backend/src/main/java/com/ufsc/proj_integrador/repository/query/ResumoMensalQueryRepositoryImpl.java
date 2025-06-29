@@ -50,7 +50,8 @@ public class ResumoMensalQueryRepositoryImpl implements ResumoMensalQueryReposit
     public List<ResumoMensalDto> getResumoMensalByCodigoEstacao(
             Long codigoEstacao,
             LocalDateTime inicio,
-            LocalDateTime fim
+            LocalDateTime fim,
+            Integer nivelConsistencia
     ) {
         QResumoMensal resumoMensal = QResumoMensal.resumoMensal;
         QEstacao estacao = QEstacao.estacao;
@@ -75,14 +76,19 @@ public class ResumoMensalQueryRepositoryImpl implements ResumoMensalQueryReposit
         if (inicio != null) {
             query.where(resumoMensal.dataInicial.goe(inicio));
         }
+
         if (fim != null) {
             query.where(resumoMensal.dataInicial.loe(fim));
+        }
+
+        if (nivelConsistencia != null) {
+            query.where(resumoMensal.nivelConsistencia.eq(nivelConsistencia));
         }
 
         return query.fetch();
     }
 
-    public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
+    public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim, Integer nivelConsistencia) {
         QResumoMensal resumoMensal = QResumoMensal.resumoMensal;
         QEstacao estacao = QEstacao.estacao;
 
@@ -95,8 +101,13 @@ public class ResumoMensalQueryRepositoryImpl implements ResumoMensalQueryReposit
         if (inicio != null) {
             query.where(resumoMensal.dataInicial.goe(inicio));
         }
+
         if (fim != null) {
             query.where(resumoMensal.dataInicial.loe(fim));
+        }
+
+        if (nivelConsistencia != null) {
+            query.where(resumoMensal.nivelConsistencia.eq(nivelConsistencia));
         }
 
         return query.fetch();

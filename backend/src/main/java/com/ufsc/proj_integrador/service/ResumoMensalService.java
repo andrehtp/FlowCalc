@@ -21,14 +21,15 @@ public class ResumoMensalService {
     public ResumoMensalResponseDto buildResumoMensalResponseDto(
             Long codigoEstacao,
             LocalDateTime inicio,
-            LocalDateTime fim
+            LocalDateTime fim,
+            Integer nivelConsistencia
     ) {
         CabecalhoEstacaoDto cabecalho = resumoMensalQueryRepository.getCabecalhoEstacaoByCodigoEstacao(codigoEstacao);
         if (cabecalho == null) {
             throw new EstacaoNotFoundException("Estação com código " + codigoEstacao + " não encontrada.");
         }
 
-        List<ResumoMensalDto> resumoMensal = resumoMensalQueryRepository.getResumoMensalByCodigoEstacao(codigoEstacao, inicio, fim);
+        List<ResumoMensalDto> resumoMensal = resumoMensalQueryRepository.getResumoMensalByCodigoEstacao(codigoEstacao, inicio, fim, nivelConsistencia);
         if (resumoMensal.isEmpty()) {
             throw new NaoExistemDadosNoPeriodoException("Não existem dados para o período especificado.");
         }
@@ -40,8 +41,8 @@ public class ResumoMensalService {
                 .build();
     }
 
-    public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
-        return resumoMensalQueryRepository.getVazoesSomenteValores(codigoEstacao, inicio, fim);
+    public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim, Integer nivelConsistencia) {
+        return resumoMensalQueryRepository.getVazoesSomenteValores(codigoEstacao, inicio, fim, nivelConsistencia);
     }
 
 }

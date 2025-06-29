@@ -35,8 +35,13 @@ public class CurvaPermanenciaController {
 				? LocalDate.parse(fimStr).atStartOfDay()
 				: null;
 
-		List<Double> vazoesMensais = resumoMensalService.getVazoesSomenteValores(codigo, inicio, fim);
-		List<Double> vazoesDiarias = vazaoDiariaService.getVazoesSomenteValores(codigo, inicio, fim);
+		String consistenciaStr = (String) body.get("nivelConsistencia");
+		Integer nivelConsistencia = (consistenciaStr != null && !consistenciaStr.isBlank())
+				? Integer.parseInt(consistenciaStr)
+				: null;
+
+		List<Double> vazoesMensais = resumoMensalService.getVazoesSomenteValores(codigo, inicio, fim, nivelConsistencia);
+		List<Double> vazoesDiarias = vazaoDiariaService.getVazoesSomenteValores(codigo, inicio, fim, nivelConsistencia);
 
 		CurvaPermanenciaDto resultadoMensal = CurvaPermanenciaCalculator.calcular(vazoesMensais);
 		CurvaPermanenciaDto resultadoDiario = CurvaPermanenciaCalculator.calcular(vazoesDiarias);
