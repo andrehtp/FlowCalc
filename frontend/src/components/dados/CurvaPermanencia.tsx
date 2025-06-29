@@ -11,12 +11,12 @@ import {
 
 import { useState, useMemo, useEffect } from 'react';
 
-export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
+export const CurvaPermanencia = ({ dados, codigoEstacao }: { dados: any[], codigoEstacao: any }) => {
   const [tipoCurva, setTipoCurva] = useState<'empirica' | 'logaritmica'>('empirica');
   const [qPersonalizado, setQPersonalizado] = useState<string>(''); // agora como string
   const [vazaoPersonalizada, setVazaoPersonalizada] = useState<number | null>(null);
   const [origemDados, setOrigemDados] = useState<'mensal' | 'diaria'>('mensal'); // select de origem
-  const [dadosVazao, setDadosVazao] = useState<any[]>(dados); // começa com os dados já carregados
+  const [dadosVazao, setDadosVazao] = useState<any[]>(Array.isArray(dados) ? dados : []);
   const [vazoesDiariasCarregadas, setVazoesDiariasCarregadas] = useState<any[] | null>(null); // cache
 
   // Atualizar dados somente quando o usuário pedir por vazão diária
@@ -25,19 +25,19 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
       if (vazoesDiariasCarregadas) {
         setDadosVazao(vazoesDiariasCarregadas); // já carregado anteriormente
       } else {
-        const resumoMensalId = dados?.[0]?.resumoMensalId;
-        if (resumoMensalId) {
+        if (codigoEstacao) {
           fetch('http://localhost:8080/api/vazoesDiarias', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ resumoMensalId }),
+            body: JSON.stringify({ codigoEstacao }),
           })
             .then((res) => res.json())
             .then((data) => {
               setVazoesDiariasCarregadas(data); // salva para não repetir
               setDadosVazao(data);
+               {console.log(data.length)}
             })
             .catch((err) => {
               console.error('Erro ao buscar vazões diárias:', err);
@@ -55,6 +55,8 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
     .map((d) => (origemDados === 'mensal' ? d.vazaoMedia : d.vazao)) // depende do tipo escolhido
     .filter((v) => typeof v === 'number' && !isNaN(v))
     .sort((a, b) => b - a); // Ordenar do maior para o menor
+
+  console.log(vazoes.length)
 
   const N = vazoes.length; // Número total de dados
 

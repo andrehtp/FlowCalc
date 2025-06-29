@@ -97,7 +97,7 @@ export const DadosPage = () => {
 
           {/* Conteúdo que muda conforme a aba ativa */}
           {abaAtiva === 'resumo' && <ResumoHidrologico dados={dadosFiltrados} />}
-          {abaAtiva === 'curva' && <CurvaPermanencia dados={dadosFiltrados} />}
+          {abaAtiva === 'curva' && <CurvaPermanencia codigoEstacao={dados?.cabecalho?.codigoEstacao} dados={dadosFiltrados} />}
         </div>
       </div>
     </div>

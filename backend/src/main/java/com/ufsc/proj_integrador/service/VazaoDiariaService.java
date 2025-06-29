@@ -15,7 +15,7 @@ public class VazaoDiariaService {
 
 	private final VazaoDiariaQueryRepository vazaoDiariaRepository;
 
-	public List<VazaoDiariaDto> getVazoesDiarias(Long resumoMensalId) {
-		return vazaoDiariaRepository.getVazoesDiarias(resumoMensalId);
+	public List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao) {
+		return vazaoDiariaRepository.getVazoesDiarias(codigoEstacao);
 	}
 }

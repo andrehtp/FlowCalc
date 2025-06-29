@@ -22,10 +22,10 @@ public class VazaoDiariaController {
 
 	@PostMapping("/vazoesDiarias")
 	public ResponseEntity<?> vazoesDiarias(@RequestBody Map<String, Object> body) {
-		Long resumoMensalId = Long.valueOf(body.get("resumoMensalId").toString());
+		Long codigoEstacao = Long.valueOf(body.get("codigoEstacao").toString());
 
-		if(resumoMensalId != null) {
-			return ResponseEntity.ok(vazaoDiariaService.getVazoesDiarias(resumoMensalId));
+		if(codigoEstacao != null) {
+			return ResponseEntity.ok(vazaoDiariaService.getVazoesDiarias(codigoEstacao));
 		}
 
 		return ResponseEntity.status(404).body("error");
