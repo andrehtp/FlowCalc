@@ -4,7 +4,6 @@ import com.ufsc.proj_integrador.controller.exception.EstacaoNotFoundException;
 import com.ufsc.proj_integrador.controller.exception.NaoExistemDadosNoPeriodoException;
 import com.ufsc.proj_integrador.dto.*;
 
-import com.ufsc.proj_integrador.repository.VazaoDiariaRepository;
 import com.ufsc.proj_integrador.repository.query.ResumoMensalQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.Map;
 public class ResumoMensalService {
 
     private final ResumoMensalQueryRepository resumoMensalQueryRepository;
-    private final VazaoDiariaRepository vazaoDiariaRepository;
 
     public ResumoMensalResponseDto buildResumoMensalResponseDto(
             Long codigoEstacao,
@@ -40,25 +38,5 @@ public class ResumoMensalService {
                 .cabecalho(cabecalho)
                 .resumosMensais(resumoMensal)
                 .build();
-    }
-
-    public List<DadosEstacaoDto> getDadosEstacao(
-            Long codigoEstacao,
-            LocalDateTime inicio,
-            LocalDateTime fim
-    ) {
-        List<DadosEstacaoDto> resultados = resumoMensalQueryRepository.getResumoMensalCompleto(codigoEstacao, inicio, fim);
-
-        List<Long> resumoMensaisIds = resultados.stream()
-                .map(DadosEstacaoDto::getResumoMensalId)
-                .toList();
-
-        Map<Long, List<VazaoDiariaDto>> vazoesMap = vazaoDiariaRepository.getVazoesByResumoMensalIds(resumoMensaisIds);
-
-        for (DadosEstacaoDto dto : resultados) {
-            dto.setVazoesDiarias(vazoesMap.getOrDefault(dto.getResumoMensalId(), List.of()));
-        }
-
-        return resultados;
     }
 }

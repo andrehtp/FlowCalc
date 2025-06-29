@@ -15,5 +15,4 @@ public class VazaoDiariaDto {
     private Long resumoMensalId;
     private LocalDate dataVazao;
     private Float vazao;
-    private Integer status;
 }
