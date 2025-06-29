@@ -52,31 +52,46 @@ export const ResumoHidrologico = ({ dados }: ResumoHidrologicoProps) => {
       <div className="grid grid-cols-2 md:grid-cols-10 gap-4 mb-6">
         <div className="bg-blue-50 rounded-md p-2 text-center shadow-sm border border-blue-100">
           <p className="text-[10px] text-gray-600">Resumos Mensais</p>
-          <p className="text-base font-semibold">{dados.length}</p>
+          <p className="text-base font-semibold">{dados.length > 0 ? dados.length : '-'}</p>
         </div>
+
         <div className="bg-blue-50 rounded-md p-2 text-center shadow-sm border border-blue-100">
           <p className="text-[10px] text-gray-600">Vazão Máxima</p>
           <p className="text-base font-semibold">
-            {Math.max(...dados.map((d) => d.vazaoMaxima))}
+            {dados.length > 0
+              ? Math.max(...dados.map((d) => d.vazaoMaxima ?? -Infinity)) !== -Infinity
+                ? Math.max(...dados.map((d) => d.vazaoMaxima ?? -Infinity)).toFixed(2)
+                : '-'
+              : '-'}
           </p>
         </div>
+
         <div className="bg-blue-50 rounded-md p-2 text-center shadow-sm border border-blue-100">
           <p className="text-[10px] text-gray-600">Vazão Média</p>
           <p className="text-base font-semibold">
-            {(
-              dados.reduce((acc, d) => acc + d.vazaoMedia, 0) / dados.length
-            ).toFixed(2)}
+            {dados.length > 0
+              ? (
+                  dados.reduce((acc, d) => acc + (d.vazaoMedia ?? 0), 0) /
+                  dados.filter((d) => d.vazaoMedia !== undefined && d.vazaoMedia !== null).length
+                ).toFixed(2)
+              : '-'}
           </p>
         </div>
+
         <div className="bg-blue-50 rounded-md p-2 text-center shadow-sm border border-blue-100">
           <p className="text-[10px] text-gray-600">Vazão Mínima</p>
           <p className="text-base font-semibold">
-            {Math.min(...dados.map((d) => d.vazaoMinima)).toFixed(2)}
+            {dados.length > 0
+              ? Math.min(...dados.map((d) => d.vazaoMinima ?? Infinity)) !== Infinity
+                ? Math.min(...dados.map((d) => d.vazaoMinima ?? Infinity)).toFixed(2)
+                : '-'
+              : '-'}
           </p>
         </div>
+
         <div className="bg-blue-50 rounded-md p-2 text-center shadow-sm border border-blue-100">
           <p className="text-[10px] text-gray-600">Relatórios</p>
-          <p className="text-base font-semibold">{dados.length}</p>
+          <p className="text-base font-semibold">{dados.length > 0 ? dados.length : '-'}</p>
         </div>
       </div>
       
