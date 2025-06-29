@@ -1,5 +1,6 @@
 package com.ufsc.proj_integrador.repository.query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ufsc.proj_integrador.dto.VazaoDiariaDto;
 import com.ufsc.proj_integrador.model.QEstacao;
+import com.ufsc.proj_integrador.model.QResumoMensal;
 import com.ufsc.proj_integrador.model.QVazaoDiaria;
 
 @RequiredArgsConstructor
@@ -19,9 +21,9 @@ public class VazaoDiariaQueryRepositoryImpl implements VazaoDiariaQueryRepositor
 
 	private final JPAQueryFactory queryFactory;
 
-	public List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao) {
+	public List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
 		QVazaoDiaria vazaoDiaria = QVazaoDiaria.vazaoDiaria;
-		QEstacao estacao = QEstacao.estacao;
+		QResumoMensal resumoMensal = QResumoMensal.resumoMensal;
 
 		JPAQuery<VazaoDiariaDto> query = queryFactory
 				.select(Projections.bean(VazaoDiariaDto.class,
@@ -31,6 +33,13 @@ public class VazaoDiariaQueryRepositoryImpl implements VazaoDiariaQueryRepositor
 						))
 				.from(vazaoDiaria)
 				.where(vazaoDiaria.resumoMensal.estacao.codigoEstacao.eq(codigoEstacao));
+
+		if (inicio != null) {
+			query.where(resumoMensal.dataInicial.goe(inicio));
+		}
+		if (fim != null) {
+			query.where(resumoMensal.dataInicial.loe(fim));
+		}
 
 		return query.fetch();
 	}

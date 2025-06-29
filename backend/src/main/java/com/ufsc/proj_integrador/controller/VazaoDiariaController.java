@@ -1,5 +1,7 @@
 package com.ufsc.proj_integrador.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,16 @@ public class VazaoDiariaController {
 		Long codigoEstacao = Long.valueOf(body.get("codigoEstacao").toString());
 
 		if(codigoEstacao != null) {
-			return ResponseEntity.ok(vazaoDiariaService.getVazoesDiarias(codigoEstacao));
+			String inicioStr = (String) body.get("dataInicio");
+			LocalDateTime inicio = (inicioStr != null && !inicioStr.isBlank())
+					? LocalDate.parse(inicioStr).atStartOfDay()
+					: null;
+
+			String fimStr = (String) body.get("dataFim");
+			LocalDateTime fim = (fimStr != null && !fimStr.isBlank())
+					? LocalDate.parse(fimStr).atStartOfDay()
+					: null;
+			return ResponseEntity.ok(vazaoDiariaService.getVazoesDiarias(codigoEstacao, inicio, fim));
 		}
 
 		return ResponseEntity.status(404).body("error");

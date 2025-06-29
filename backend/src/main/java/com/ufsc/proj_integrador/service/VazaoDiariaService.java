@@ -1,5 +1,6 @@
 package com.ufsc.proj_integrador.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class VazaoDiariaService {
 
 	private final VazaoDiariaQueryRepository vazaoDiariaRepository;
 
-	public List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao) {
-		return vazaoDiariaRepository.getVazoesDiarias(codigoEstacao);
+	public List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
+		return vazaoDiariaRepository.getVazoesDiarias(codigoEstacao, inicio, fim);
 	}
 }

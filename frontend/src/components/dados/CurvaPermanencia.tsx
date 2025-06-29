@@ -11,6 +11,8 @@ import {
 
 import { useState, useMemo, useEffect } from 'react';
 
+import { validateData } from '../Validation';
+
 export const CurvaPermanencia = ({ dados, codigoEstacao }: { dados: any[], codigoEstacao: any }) => {
   const [tipoCurva, setTipoCurva] = useState<'empirica' | 'logaritmica'>('empirica');
   const [qPersonalizado, setQPersonalizado] = useState<string>(''); // agora como string
@@ -18,6 +20,20 @@ export const CurvaPermanencia = ({ dados, codigoEstacao }: { dados: any[], codig
   const [origemDados, setOrigemDados] = useState<'mensal' | 'diaria'>('mensal'); // select de origem
   const [dadosVazao, setDadosVazao] = useState<any[]>(Array.isArray(dados) ? dados : []);
   const [vazoesDiariasCarregadas, setVazoesDiariasCarregadas] = useState<any[] | null>(null); // cache
+
+    const [dataMinima, dataMaxima] = useMemo(() => {
+    if (!dados.length) return [null, null];
+
+    const ordenadas = [...dados].sort(
+      (a, b) =>
+        new Date(a.dataInicial).getTime() - new Date(b.dataInicial).getTime()
+    );
+
+    return [
+      ordenadas[0].dataInicial.split('T')[0],
+      ordenadas[ordenadas.length - 1].dataInicial.split('T')[0],
+    ];
+  }, [dados]);
 
   // Atualizar dados somente quando o usuário pedir por vazão diária
   useEffect(() => {
@@ -31,7 +47,7 @@ export const CurvaPermanencia = ({ dados, codigoEstacao }: { dados: any[], codig
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ codigoEstacao }),
+            body: JSON.stringify({ codigoEstacao, dataInicio: dataMinima, dataFim: dataMaxima }),
           })
             .then((res) => res.json())
             .then((data) => {
