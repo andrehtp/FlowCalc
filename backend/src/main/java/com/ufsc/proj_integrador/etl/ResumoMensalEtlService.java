@@ -4,6 +4,7 @@ import com.ufsc.proj_integrador.model.ResumoMensal;
 import com.ufsc.proj_integrador.model.VazaoDiaria;
 import com.ufsc.proj_integrador.repository.EstacaoRepository;
 import com.ufsc.proj_integrador.repository.ResumoMensalRepository;
+import com.ufsc.proj_integrador.repository.VazaoDiariaRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
