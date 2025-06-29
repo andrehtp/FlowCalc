@@ -1,7 +1,3 @@
-
-
-
-
  <p align="center">
   <img src="./frontend/src/assets/icon.svg" alt="FlowCalc Logo" width="80" style="vertical-align: middle;"/>
   <span style="font-size: 1.8em; font-weight: bold; vertical-align: middle;"> FlowCalc - Análise de Vazões e Ferramentas Hidrológicas</span>
