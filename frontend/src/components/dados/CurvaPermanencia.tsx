@@ -40,11 +40,11 @@ export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim }: {
 
   useEffect(() => {
   if (resultado) {
-    console.log('📊 Resultado completo:', resultado);
-    console.log('🟦 Dados usados (resumoMensal ou vazaoDiaria):', dados);
-    console.log('🔢 ChartData (curva):', chartData);
-    console.log('📌 Qmap:', qmap);
-    console.log('📚 Classes logarítmicas:', classes);
+    console.log('Resultado completo:', resultado);
+    console.log('Dados usados (resumoMensal ou vazaoDiaria):', dados);
+    console.log('ChartData (curva):', chartData);
+    console.log('Qmap:', qmap);
+    console.log('Classes logarítmicas:', classes);
   }
 }, [resultado, dados, chartData, qmap, classes]);
 
