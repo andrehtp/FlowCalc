@@ -9,19 +9,19 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
   const [tipoCurva, setTipoCurva] = useState<'empirica' | 'logaritmica'>('empirica');
-
-  //Ordenar e filtrar os dados de vazão média
+  const [qPersonalizado, setQPersonalizado] = useState<string>(''); // agora como string
+  const [vazaoPersonalizada, setVazaoPersonalizada] = useState<number | null>(null);
+  // Ordenar e filtrar os dados de vazão média
   const vazoes = dados
     .map((d) => d.vazaoMedia)
     .filter((v) => typeof v === 'number' && !isNaN(v))
     .sort((a, b) => b - a); // Ordenar do maior para o menor
 
   const N = vazoes.length; // Número total de dados
-
 
   // Dados da Curva Empírica
   // Fórmula de Weibull: P = (posição / (N + 1))
@@ -30,94 +30,203 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
     vazao: vazao,
   }));
 
-//Encontrar a vazão do valor de permanência mais próximo a percentuais específicos
+  // Encontrar a vazão do valor de permanência mais próximo a percentuais específicos
   const QDCalc = (d: number): number => {
-    return chartData.reduce((prev, curr) => Math.abs(curr.permanencia - d) < Math.abs(prev.permanencia - d) ? curr : prev).vazao;
+    return chartData.reduce((prev, curr) =>
+      Math.abs(curr.permanencia - d) < Math.abs(prev.permanencia - d) ? curr : prev
+    ).vazao;
   };
 
+  // Cálculo das vazões Q50, Q90, Q95 e Q98
   const q50 = QDCalc(50);
   const q90 = QDCalc(90);
   const q95 = QDCalc(95);
   const q98 = QDCalc(98);
 
+
+  // Tabela de classes logarítmicas
+  const classes = useMemo(() => {
+    const K = 30;
+    const Qmax = Math.max(...vazoes);
+    const Qmin = Math.min(...vazoes);
+    const h = (Math.log(Qmax) - Math.log(Qmin)) / K;
+
+    const linhas = [];
+    for (let j = K; j >= 1; j--) {
+      const li = Math.exp(Math.log(Qmin) + (j - 1) * h);
+      const ls = Math.exp(Math.log(Qmin) + j * h);
+      const fi = vazoes.filter((v) => v >= li && v < ls).length;
+      const fac = vazoes.filter((v) => v >= li).length;
+
+      linhas.push({
+        classe: K - j + 1,
+        li: li,
+        ls: ls,
+        fi: fi,
+        fac: fac,
+      });
+    }
+    return linhas;
+  }, [vazoes]);
+
   return (
-     <div>
+    <div>
+      {/* Container principal */}
       <h2 className="text-xl font-bold mb-4">Curva de Permanência</h2>
 
-      {/* Toggle */}
-      <div className="flex items-center gap-4 mb-4">
-        <button
-          onClick={() => setTipoCurva('empirica')}
-          className={`px-4 py-2 rounded ${
-            tipoCurva === 'empirica'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-800'
-          }`}
-        >
-          Empírica
-        </button>
-        <button
-          onClick={() => setTipoCurva('logaritmica')}
-          className={`px-4 py-2 rounded ${
-            tipoCurva === 'logaritmica'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-800'
-          }`}
-        >
-          Logarítmica
-        </button>
-      </div>
-    {/* Q-values ao lado */}
-      <div className="mb-4 text-sm text-gray-700">
-        <span className="mr-4"><strong>Q50</strong>: {q50.toFixed(2)} m³/s</span>
-        <span className="mr-4"><strong>Q90</strong>: {q90.toFixed(2)} m³/s</span>
-        <span className="mr-4"><strong>Q95</strong>: {q95.toFixed(2)} m³/s</span>
-        <span className="mr-4"><strong>Q98</strong>: {q98.toFixed(2)} m³/s</span>
+      {/* Seção de toggle*/}
+      <div className="flex justify-between items-start mb-4">
+        {/* Toggle de tipo de curva */}
+        <div className="flex items-center gap-4 mb-4">
+          <button
+            onClick={() => setTipoCurva('empirica')}
+            className={`px-4 py-2 rounded ${
+              tipoCurva === 'empirica'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-800'
+            }`}
+          >
+            Empírica
+          </button>
+          <button
+            onClick={() => setTipoCurva('logaritmica')}
+            className={`px-4 py-2 rounded ${
+              tipoCurva === 'logaritmica'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-800'
+            }`}
+          >
+            Logarítmica
+          </button>
+        </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="permanencia"
-            type='number'
-            tick={{ fontSize: 10 }}
-            domain={[0, 100]}
-            ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-            label={{
-              value: 'Probabilidade de Permanência (%)',
-              position: 'insideBottomRight',
-              offset: -5,
-            }}
-          />
-          <YAxis
-            scale={tipoCurva === 'logaritmica' ? 'log' : 'linear'}
-            domain={['auto', 'auto']}
-            label={{
-              value: 'Vazão (m³/s)',
-              angle: -90,
-              position: 'insideLeft',
-            }}
-          />
-          <Tooltip
-            formatter={(value: any) => `${Number(value).toFixed(2)} m³/s`}
-            labelFormatter={(label: any) => `Permanência: ${label.toFixed(1)}%`}
-          />
-          <Line
-            type="monotone"
-            dataKey="vazao"
-            stroke="#3182ce"
-            name="Vazão"
-            dot={false}
-          />
+      {/* Q-values ao lado */}
+      <div className="mb-4 text-sm text-gray-700 flex flex-wrap items-center gap-4">
+        {/*Q values fixos*/}
+          <div>  
+            <span className="mr-4"><strong>Q50</strong>: {q50.toFixed(2)} m³/s</span>
+            <span className="mr-4"><strong>Q90</strong>: {q90.toFixed(2)} m³/s</span>
+            <span className="mr-4"><strong>Q95</strong>: {q95.toFixed(2)} m³/s</span>
+            <span className="mr-4"><strong>Q98</strong>: {q98.toFixed(2)} m³/s</span>
+          </div>
+          {/* Q value personalizado */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="qPersonalizado" className="text-sm">QD:</label>
+            <input
+              id="qCustom"
+              type="number"
+              min={1}
+              max={99}
+              value={qPersonalizado}
+              onChange={(e) => {
+                const value = e.target.value;
+                setQPersonalizado(value);
+                const num = Number(value);
+                if (num >= 1 && num <= 99) {
+                  if (!isNaN(num)) {
+                    setVazaoPersonalizada(QDCalc(num));
+                  } else {
+                    setVazaoPersonalizada(null);
+                  }
+                } else {
+                  setVazaoPersonalizada(null);
+                }
+              }}
+            className="border border-gray-300 rounded px-2 py-1 w-16 text-sm"
+            />
+            {vazaoPersonalizada !== null && (
+              <span className="text-sm text-blue-700 font-medium">
+                Q{qPersonalizado}: {vazaoPersonalizada.toFixed(2)} m³/s
+              </span>
+            )}   
+          </div>
+      </div>
 
-          {/* Linhas de referência dos percentuais */}
-          <ReferenceLine y={q50} label="Q50" stroke="#4299e1" strokeDasharray="3 3" />
-          <ReferenceLine y={q90} label="Q90" stroke="#4299e1" strokeDasharray="3 3" />
-          <ReferenceLine y={q95} label="Q95" stroke="#4299e1" strokeDasharray="3 3" />
-          <ReferenceLine y={q98} label="Q98" stroke="#4299e1" strokeDasharray="3 3" />
-        </LineChart>
-      </ResponsiveContainer>
+      {/* Gráfico e tabela de classes */}
+      <div className="flex gap-4">
+        {/* Gráfico */}
+        <div className="flex-1">
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+          dataKey="permanencia"
+          type="number"
+          tick={{ fontSize: 10 }}
+          domain={[0, 100]}
+          ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+          label={{
+            value: 'Probabilidade de Permanência (%)',
+            position: 'insideBottomRight',
+            offset: -5,
+          }}
+              />
+              <YAxis
+          scale={tipoCurva === 'logaritmica' ? 'log' : 'linear'}
+          domain={['auto', 'auto']}
+          label={{
+            value: 'Vazão (m³/s)',
+            angle: -90,
+            position: 'insideLeft',
+          }}
+              />
+              <Tooltip
+          formatter={(value: any) => `${Number(value).toFixed(2)} m³/s`}
+          labelFormatter={(label: any) => `Permanência: ${label.toFixed(1)}%`}
+              />
+              <Line
+          type="monotone"
+          dataKey="vazao"
+          stroke="#3182ce"
+          name="Vazão"
+          dot={false}
+              />
+              {/* Linhas de referência dos percentuais */}
+              <ReferenceLine y={q50} label="Q50" stroke="#4299e1" strokeDasharray="3 3" />
+              <ReferenceLine y={q90} label="Q90" stroke="#4299e1" strokeDasharray="3 3" />
+              <ReferenceLine y={q95} label="Q95" stroke="#4299e1" strokeDasharray="3 3" />
+              <ReferenceLine y={q98} label="Q98" stroke="#4299e1" strokeDasharray="3 3" />
+
+              {/*Linha de referência personalizada*/}
+              {vazaoPersonalizada !== null && (
+                <ReferenceLine
+                  y={vazaoPersonalizada}
+                  label={`Q${qPersonalizado}`}
+                  stroke="#e53e3e"
+                  strokeDasharray="4 2"
+                />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Tabela de classes logarítmicas */}
+        <div className="overflow-auto max-h-[400px] border rounded-md text-xs self-start">
+          <table className="min-w-max text-center">
+            <thead className="bg-gray-100 sticky top-0 z-10">
+              <tr>
+                <th className="px-2 py-1">Classe</th>
+                <th className="px-2 py-1">LI (m³/s)</th>
+                <th className="px-2 py-1">LS (m³/s)</th>
+                <th className="px-2 py-1">Fi</th>
+                <th className="px-2 py-1">Fac</th>
+              </tr>
+            </thead>
+            <tbody>
+              {classes.map((linha) => (
+                <tr key={linha.classe} className="border-t">
+                  <td className="px-2 py-1 font-medium">{linha.classe}</td>
+                  <td className="px-2 py-1">{linha.li.toFixed(2)}</td>
+                  <td className="px-2 py-1">{linha.ls.toFixed(2)}</td>
+                  <td className="px-2 py-1">{linha.fi}</td>
+                  <td className="px-2 py-1">{linha.fac}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
