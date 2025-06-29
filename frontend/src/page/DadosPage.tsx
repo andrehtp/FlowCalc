@@ -11,6 +11,8 @@ export const DadosPage = () => {
 
   const [abaAtiva, setAbaAtiva] = useState<'resumo' | 'curva'>('resumo');
   const [nivelConsistencia, setNivelConsistencia] = useState<string | null>(null);
+  const [dataInicioFixada, setDataInicioFixada] = useState<string | null>(null);
+  const [dataFimFixada, setDataFimFixada] = useState<string | null>(null);
 
   // Bloqueia acesso direto pela URL
   useEffect(() => {
@@ -25,6 +27,17 @@ export const DadosPage = () => {
   const dadosFiltrados = nivelConsistencia
     ? resumosMensais.filter((d: any) => String(d.nivelConsistencia) === nivelConsistencia)
     : resumosMensais;
+
+
+  useEffect(() => {
+    if (resumosMensais.length > 0 && dataInicioFixada === null && dataFimFixada === null) {
+      const ordenadas = [...resumosMensais].sort((a, b) =>
+        new Date(a.dataInicial).getTime() - new Date(b.dataInicial).getTime()
+      );
+      setDataInicioFixada(ordenadas[0].dataInicial.split('T')[0]);
+      setDataFimFixada(ordenadas[ordenadas.length - 1].dataInicial.split('T')[0]);
+    }
+  }, [resumosMensais]);
 
   return (
     <div className="min-h-screen bg-gray-100 pt-2 pl-4 pr-4 pb-11">
@@ -99,8 +112,8 @@ export const DadosPage = () => {
           {abaAtiva === 'resumo' && <ResumoHidrologico dados={dadosFiltrados} />}
           {abaAtiva === 'curva' && <CurvaPermanencia
             codigoEstacao={dados?.cabecalho?.codigoEstacao}
-            dataInicio={getDataMinima(dadosFiltrados)}
-            dataFim={getDataMaxima(dadosFiltrados)}
+            dataInicio={dataInicioFixada as string}
+            dataFim={dataFimFixada as string}
           /> }
         </div>
       </div>
