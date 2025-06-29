@@ -124,7 +124,7 @@ export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim }: {
 <div className="flex gap-4">
   {/* Gráfico com largura reduzida */}
   <div className="w-3/5">
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={440}>
       <LineChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
@@ -166,7 +166,7 @@ export const CurvaPermanencia = ({ codigoEstacao, dataInicio, dataFim }: {
   </div>
 
   {/* Tabela com largura maior e rolagem vertical */}
-  <div className="w-2/5 max-h-[400px] overflow-y-auto border rounded-md text-xs self-start">
+  <div className="w-2/5 max-h-[440px] overflow-y-auto border rounded-md text-xs self-start">
     <table className="min-w-full text-center">
       <thead className="bg-gray-100 sticky top-0 z-10">
         <tr>
