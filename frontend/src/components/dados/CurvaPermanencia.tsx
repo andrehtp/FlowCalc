@@ -17,37 +17,42 @@ export const CurvaPermanencia = ({ dados }: { dados: any[] }) => {
   const [vazaoPersonalizada, setVazaoPersonalizada] = useState<number | null>(null);
   const [origemDados, setOrigemDados] = useState<'mensal' | 'diaria'>('mensal'); // select de origem
   const [dadosVazao, setDadosVazao] = useState<any[]>(dados); // começa com os dados já carregados
+  const [vazoesDiariasCarregadas, setVazoesDiariasCarregadas] = useState<any[] | null>(null); // cache
 
   // Atualizar dados somente quando o usuário pedir por vazão diária
   useEffect(() => {
     if (origemDados === 'diaria') {
-      const resumoMensalId = dados?.[0]?.resumoMensalId;
-      if (resumoMensalId) {
-        fetch('http://localhost:8080/api/vazoesDiarias', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ resumoMensalId }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setDadosVazao(data);
+      if (vazoesDiariasCarregadas) {
+        setDadosVazao(vazoesDiariasCarregadas); // já carregado anteriormente
+      } else {
+        const resumoMensalId = dados?.[0]?.resumoMensalId;
+        if (resumoMensalId) {
+          fetch('http://localhost:8080/api/vazoesDiarias', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ resumoMensalId }),
           })
-          .catch((err) => {
-            console.error('Erro ao buscar vazões diárias:', err);
-            setDadosVazao([]); // Evita travar
-          });
+            .then((res) => res.json())
+            .then((data) => {
+              setVazoesDiariasCarregadas(data); // salva para não repetir
+              setDadosVazao(data);
+            })
+            .catch((err) => {
+              console.error('Erro ao buscar vazões diárias:', err);
+              setDadosVazao([]);
+            });
+        }
       }
     } else {
       setDadosVazao(dados); // volta para os dados mensais
     }
-  }, [origemDados, dados]);
+  }, [origemDados, dados, vazoesDiariasCarregadas]);
 
-  // Ordenar e filtrar os dados de vazão média
-// Ordenar e filtrar os dados de vazão média ou diária
+  // Ordenar e filtrar os dados de vazão média ou diária
   const vazoes = dadosVazao
-    .map((d) => d.vazaoMedia ?? d.vazao) // usa vazaoMedia ou, se não tiver, usa vazao
+    .map((d) => (origemDados === 'mensal' ? d.vazaoMedia : d.vazao)) // depende do tipo escolhido
     .filter((v) => typeof v === 'number' && !isNaN(v))
     .sort((a, b) => b - a); // Ordenar do maior para o menor
 
