@@ -39,4 +39,9 @@ public class ResumoMensalService {
                 .resumosMensais(resumoMensal)
                 .build();
     }
+
+    public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
+        return resumoMensalQueryRepository.getVazoesSomenteValores(codigoEstacao, inicio, fim);
+    }
+
 }

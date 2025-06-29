@@ -82,46 +82,14 @@ public class ResumoMensalQueryRepositoryImpl implements ResumoMensalQueryReposit
         return query.fetch();
     }
 
-    //nao usar isso
-    public List<DadosEstacaoDto> getResumoMensalCompleto(
-            Long codigoEstacao,
-            LocalDateTime inicio,
-            LocalDateTime fim
-    ) {
+    public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
         QResumoMensal resumoMensal = QResumoMensal.resumoMensal;
         QEstacao estacao = QEstacao.estacao;
-        QRio rio = QRio.rio;
-        QRioCidade rioCidade = QRioCidade.rioCidade;
-        QCidade cidade = QCidade.cidade;
-        QEstado estado = QEstado.estado;
 
-        JPAQuery<DadosEstacaoDto> query = queryFactory
-                .select(Projections.bean(DadosEstacaoDto.class,
-                        estacao.codigoEstacao.as("codigoEstacao"),
-                        estacao.nome.as("nomeEstacao"),
-                        estacao.latitude.as("latitudeEstacao"),
-                        estacao.longitude.as("longitudeEstacao"),
-                        estacao.altitude.as("altitudeEstacao"),
-                        rio.nome.as("nomeRio"),
-                        cidade.nome.as("nomeCidade"),
-                        estado.nome.as("nomeEstado"),
-                        resumoMensal.dataInicial.as("dataInicial"),
-                        resumoMensal.id.as("resumoMensalId"),
-                        resumoMensal.vazaoMedia.as("vazaoMedia"),
-                        resumoMensal.vazaoMaxima.as("vazaoMaxima"),
-                        resumoMensal.vazaoMinima.as("vazaoMinima"),
-                        resumoMensal.vazaoMediaReal.as("vazaoMediaReal"),
-                        resumoMensal.vazaoMaximaReal.as("vazaoMaximaReal"),
-                        resumoMensal.vazaoMinimaReal.as("vazaoMinimaReal"),
-                        resumoMensal.nivelConsistencia.as("nivelConsistencia"),
-                        resumoMensal.metodoObtencao.as("metodoObtencao")
-                ))
+        JPAQuery<Double> query = queryFactory
+                .select(resumoMensal.vazaoMedia.castToNum(Double.class))
                 .from(resumoMensal)
                 .join(estacao).on(estacao.id.eq(resumoMensal.estacao.id))
-                .leftJoin(rio).on(rio.id.eq(estacao.rio.id))
-                .leftJoin(rioCidade).on(rioCidade.rio.id.eq(rio.id))
-                .leftJoin(cidade).on(cidade.id.eq(rioCidade.cidade.id))
-                .leftJoin(estado).on(estado.id.eq(cidade.estado.id))
                 .where(estacao.codigoEstacao.eq(codigoEstacao));
 
         if (inicio != null) {

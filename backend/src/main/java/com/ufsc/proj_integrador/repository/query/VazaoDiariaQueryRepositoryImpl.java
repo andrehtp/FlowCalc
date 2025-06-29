@@ -43,4 +43,24 @@ public class VazaoDiariaQueryRepositoryImpl implements VazaoDiariaQueryRepositor
 
 		return query.fetch();
 	}
+
+	public List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim) {
+		QVazaoDiaria vd = QVazaoDiaria.vazaoDiaria;
+		QResumoMensal rm = QResumoMensal.resumoMensal;
+
+		JPAQuery<Double> query = queryFactory
+				.select(vd.vazao.castToNum(Double.class))
+				.from(vd)
+				.join(rm).on(vd.resumoMensal.id.eq(rm.id))
+				.where(rm.estacao.codigoEstacao.eq(codigoEstacao));
+
+		if (inicio != null) {
+			query.where(rm.dataInicial.goe(inicio));
+		}
+		if (fim != null) {
+			query.where(rm.dataInicial.loe(fim));
+		}
+
+		return query.fetch();
+	}
 }

@@ -97,7 +97,11 @@ export const DadosPage = () => {
 
           {/* Conteúdo que muda conforme a aba ativa */}
           {abaAtiva === 'resumo' && <ResumoHidrologico dados={dadosFiltrados} />}
-          {abaAtiva === 'curva' && <CurvaPermanencia codigoEstacao={dados?.cabecalho?.codigoEstacao} dados={dadosFiltrados} />}
+          {abaAtiva === 'curva' && <CurvaPermanencia
+            codigoEstacao={dados?.cabecalho?.codigoEstacao}
+            dataInicio={getDataMinima(dadosFiltrados)}
+            dataFim={getDataMaxima(dadosFiltrados)}
+          /> }
         </div>
       </div>
     </div>
@@ -108,3 +112,21 @@ const mostrarOuIndisponivel = (valor?: string | number) =>
   valor !== null && valor !== undefined && String(valor).trim() !== ''
     ? valor
     : 'Não disponível';
+
+
+const getDataMinima = (resumos: any[]) => {
+  if (!resumos.length) return null;
+  return resumos
+    .map(d => d.dataInicial)
+    .sort()[0]
+    .split('T')[0]; // 'YYYY-MM-DD'
+};
+
+const getDataMaxima = (resumos: any[]) => {
+  if (!resumos.length) return null;
+  return resumos
+    .map(d => d.dataInicial)
+    .sort()
+    .reverse()[0]
+    .split('T')[0];
+};

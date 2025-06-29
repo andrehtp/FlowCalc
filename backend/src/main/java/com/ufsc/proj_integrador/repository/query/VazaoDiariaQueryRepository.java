@@ -6,5 +6,7 @@ import java.util.List;
 import com.ufsc.proj_integrador.dto.VazaoDiariaDto;
 
 public interface VazaoDiariaQueryRepository {
-	public List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
+	List<VazaoDiariaDto> getVazoesDiarias(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
+
+	List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
 }

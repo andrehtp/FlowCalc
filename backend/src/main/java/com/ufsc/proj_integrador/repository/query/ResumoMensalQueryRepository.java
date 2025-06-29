@@ -8,11 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ResumoMensalQueryRepository {
-    List<DadosEstacaoDto> getResumoMensalCompleto(
-            Long codigoEstacao,
-            LocalDateTime inicio,
-            LocalDateTime fim
-    );
 
     CabecalhoEstacaoDto getCabecalhoEstacaoByCodigoEstacao(Long codigoEstacao);
 
@@ -21,4 +16,6 @@ public interface ResumoMensalQueryRepository {
             LocalDateTime inicio,
             LocalDateTime fim
     );
+
+    List<Double> getVazoesSomenteValores(Long codigoEstacao, LocalDateTime inicio, LocalDateTime fim);
 }
