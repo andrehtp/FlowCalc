@@ -64,7 +64,7 @@ export const EstacaoForm = () => {
       }
 
       // Simula atraso pra testar loading (pode remover depois)
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       const data = JSON.parse(responseText);
       navigate('/dados-estacao', { state: { dados: data } });
