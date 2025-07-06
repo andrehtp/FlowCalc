@@ -46,7 +46,7 @@ A aplicação estará disponível em: [http://localhost:8081/](http://localhost:
 
 Para fins de teste, o código de uma estação que pode ser utilizado é: `12500000`;
 
-## Instalação (Back-End com Spring Boot)
+# Instalação (Back-End com Spring Boot)
 
 ### 1. Requisitos
 
@@ -98,7 +98,7 @@ Aplicação estará disponível em `http://localhost:8080`
 
 ---
 
-## Instalação (Front-End com React)
+# Instalação (Front-End com React)
 
 ### 1. Requisitos
 
