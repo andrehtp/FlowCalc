@@ -8,20 +8,19 @@ export const DadosPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [dados, setDados] = useState<any>(location.state?.dados ?? null);
+  const [mensagemErro, setMensagemErro] = useState<string | null>(null);
 
   const [abaAtiva, setAbaAtiva] = useState<'resumo' | 'curva'>('resumo');
   const [nivelConsistencia, setNivelConsistencia] = useState<string | null>(null);
   const [dataInicioFixada, setDataInicioFixada] = useState<string | null>(null);
   const [dataFimFixada, setDataFimFixada] = useState<string | null>(null);
 
-  // Inputs controlados
   const [nivelConsistenciaInput, setNivelConsistenciaInput] = useState<string | null>(null);
   const [dataInicioInput, setDataInicioInput] = useState<string | null>(null);
   const [dataFimInput, setDataFimInput] = useState<string | null>(null);
 
   const cabecalho = dados?.cabecalho ?? {};
   const resumosMensais = dados?.resumosMensais ?? [];
-
   const dadosFiltrados = resumosMensais;
 
   useEffect(() => {
@@ -62,14 +61,23 @@ export const DadosPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-      .then(res => res.json())
-      .then(data => {
-        setDados(data);
-        setNivelConsistencia(nivelConsistenciaInput);
-        setDataInicioFixada(dataInicioInput);
-        setDataFimFixada(dataFimInput);
+      .then(async res => {
+        const texto = await res.text();
+        try {
+          const data = JSON.parse(texto);
+          setDados(data);
+          setNivelConsistencia(nivelConsistenciaInput);
+          setDataInicioFixada(dataInicioInput);
+          setDataFimFixada(dataFimInput);
+          setMensagemErro(null);
+        } catch (e) {
+          setMensagemErro("Não existem dados para estes filtros no período específicado. Valores anteriores foram mantidos na página.");
+        }
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setMensagemErro("Erro ao consultar o backend.");
+      });
   };
 
   return (
@@ -121,6 +129,12 @@ export const DadosPage = () => {
             >
               Filtrar
             </button>
+
+            {mensagemErro && (
+              <div className="mt-4 p-3 rounded bg-red-100 text-red-700 text-sm font-medium border border-red-300">
+                {mensagemErro}
+              </div>
+            )}
           </div>
 
           <div className="bg-[#e7eaf6] rounded-lg shadow-md p-6">
