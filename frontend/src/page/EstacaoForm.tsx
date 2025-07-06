@@ -1,11 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { validateCodigo, validateData } from '../components/Validation';
 import { useNavigate } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 export const EstacaoForm = () => {
   const navigate = useNavigate();
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const [codigo, setCodigo] = useState('');
   const [inicio, setInicio] = useState('');
@@ -16,7 +14,6 @@ export const EstacaoForm = () => {
   const [fimError, setFimError] = useState('');
   const [codigoServerError, setCodigoServerError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +29,7 @@ export const EstacaoForm = () => {
     setInicioError(inicioMsg);
     setFimError(fimMsg);
 
-    if (codigoMsg || inicioMsg || fimMsg || !captchaToken) {
+    if (codigoMsg || inicioMsg || fimMsg) {
       setLoading(false);
       return;
     }
@@ -41,11 +38,11 @@ export const EstacaoForm = () => {
       codEstacao: codigo.trim(),
       dataInicio: inicio,
       dataFim: fim,
-      captchaToken,
+      // captchaToken: null, // (removido)
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/estacoes/consulta-estacao', {
+      const response = await fetch('http://localhost:8080/api/estacoes/consulta-estacao-with-etl', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -64,7 +61,7 @@ export const EstacaoForm = () => {
       }
 
       // Simula atraso pra testar loading (pode remover depois)
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const data = JSON.parse(responseText);
       navigate('/dados-estacao', { state: { dados: data } });
@@ -74,8 +71,6 @@ export const EstacaoForm = () => {
       setCodigoServerError('Erro na conexão com o servidor.');
     } finally {
       setLoading(false);
-      setCaptchaToken(null);
-      recaptchaRef.current?.reset(); // Reset do CAPTCHA para renovar o token
     }
   };
 
@@ -120,21 +115,13 @@ export const EstacaoForm = () => {
         </div>
       </div>
 
-      <div className="w-full flex justify-center">
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          sitekey="6LecjlErAAAAAKlGETnss4t4EVWpORF5TxE_u5S7"
-          onChange={(token) => setCaptchaToken(token)}
-          onExpired={() => setCaptchaToken(null)}
-          size="normal"
-        />
-      </div>
+      {/* CAPTCHA removido */}
 
       <button
         type="submit"
-        disabled={loading || !captchaToken}
+        disabled={loading}
         className={`flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded ${
-          loading || !captchaToken ? 'opacity-60 cursor-not-allowed' : ''
+          loading ? 'opacity-60 cursor-not-allowed' : ''
         }`}
       >
         {loading ? (
