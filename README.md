@@ -4,27 +4,47 @@
 </p>
 
 
-## Sobre o projeto
+# Sobre o projeto
 
-**HidroLab** é uma plataforma interativa para análise hidrológica com base em dados de vazão de estações do governo brasileiro (ANA).
+**HidroLab** é uma plataforma interativa desenvolvida para facilitar a análise hidrológica com base nos dados de vazão das estações monitoradas pela Agência Nacional de Águas e Saneamento Básico (ANA). A aplicação foi pensada para pesquisadores, profissionais da área ambiental e gestores de recursos hídricos que necessitam de ferramentas práticas e atualizadas para visualizar e interpretar séries históricas de vazão.
 
-Ele permite:
-* Extrai automaticamente de forma mensal os dados públicos do site da ANA (Agência Nacional de Águas e Saneamento Básico). 
-* Tratamamento e armazenamento local dos dados extraído em um próprio banco de dados.
-* Curva de Permanência (Empírica e Logarítmica)
-* Cálculo de Q-valores (Q90, Q95, Q98, Q50)
-* Estatísticas por classe de vazão
-* Gráficos de frequência acumulada
-* Filtro por intervalo de datas
-* Seleção entre vazões diárias ou mensais
+## Funcionalidades:
 
-Arquitetura do sistema:
+* Banco de dados local pré-carregado com todas as séries históricas de vazão disponíveis na API da ANA, atualizadas até 01/06/2025.
+* Verificação automática de conectividade e atualização de dados: ao buscar uma estação específica, o sistema verifica a disponibilidade de novos dados na API da ANA e os insere automaticamente no banco da aplicação, caso existam.
+* Visualização gráfica da Curva de Permanência, com suporte às versões empírica e logarítmica.
+* Cálculo automático dos principais Q-valores: Q90, Q95, Q98 e Q50.
+* Geração de estatísticas por classe de vazão, permitindo análises comparativas e de distribuição.
+* Gráficos de frequência acumulada para análise da distribuição das vazões.
+* Filtros por intervalo de datas, oferecendo maior controle sobre o período analisado.
+* Opção de visualização dos dados em granularidade diária ou mensal.
+
+## Técnologias utilizadas:
 
 * Front-end: React + TypeScript
 * Back-end: Spring Boot (Java)
-* Banco de dados: PostgreSQL (local ou na nuvem)
+* Banco de dados: PostgreSQL 
 
 ---
+
+## Arquitetura geral:
+
+![image](https://github.com/user-attachments/assets/789b567d-9e43-415d-83ec-0a7d43d39fcd)
+
+
+---
+
+# Subindo a aplicação com Docker Compose
+
+**Pré-requisitos**: Docker e Docker Compose instalados na máquina.
+
+1. Faça o download da pasta `docker-compose`;
+2. Abra um terminal dentro dessa pasta;
+3. Execute o comando: `docker-compose up -d`;
+
+A aplicação estará disponível em: [http://localhost:8081/](http://localhost:8081/)
+
+Para fins de teste, o código de uma estação que pode ser utilizado é: `12500000`;
 
 ## Instalação (Back-End com Spring Boot)
 
@@ -101,20 +121,6 @@ Frontend disponível em `http://localhost:5173`
 
 ---
 
-## Funcionalidades atuais
-
-* Integração com API da ANA (SNIRH)
-* Mapa interativo com estações
-* Filtros por região, tipo de estação e período
-* Cálculo de curva de permanência
-
----
-
-## Funcionalidades futuras
-
-* Exportação para .csv
-* Geração de relatório em .pdf
-* Cálculos de mínimas (Q7,10)
 
 ---
 ## Licença
