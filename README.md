@@ -38,7 +38,7 @@
 
 **Pré-requisitos**: Docker e Docker Compose instalados na máquina.
 
-1. Abra um terminal dentro da pasta `hidrolab` disponível para download [aqui](https://drive.google.com/drive/folders/1UoGwCXeufHPbtGOYPKU783534Q_fMWoZ?usp=sharing);
+1. Abra um terminal dentro da pasta `hidrolab` disponível para download [aqui](https://drive.google.com/file/d/1M3sBCHbF4S3_IgZ0G2PXjw5I1JAxIIN_/view?usp=sharing);
 2. Execute o comando: `docker-compose up -d`;
 
 A aplicação estará disponível em: [http://localhost:8081/](http://localhost:8081/)
